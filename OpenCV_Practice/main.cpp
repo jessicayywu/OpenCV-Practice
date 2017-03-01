@@ -47,10 +47,10 @@ int main() {
 
 		addWeighted(ROI, 0, camera_frame, 1, 0, ROI);
 
-		//if (video_frame.rows > 0)
-		imshow("OpenCV Practice", video_frame);
-		//else
-		//	break;
+		if (video.get(CV_CAP_PROP_FRAME_COUNT) - video.get(CV_CAP_PROP_POS_FRAMES) > 0)
+			imshow("OpenCV Practice", video_frame);
+		else
+			video.set(CV_CAP_PROP_POS_FRAMES, 0);
 
 
 		if(waitKey(30)>=0) break;
