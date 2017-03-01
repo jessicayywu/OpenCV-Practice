@@ -4,9 +4,17 @@
 using namespace cv;
 using namespace std;
 
-int main() {
-	Mat video_frame, camera_frame, edge_frame;
-	Mat gray_camera, edges, ROI;
+Mat video_frame, camera_frame, edge_frame;
+Mat gray_camera, edges, ROI;
+int slider_value;
+
+void on_trackbar(int, void*) {
+	double alpha = (double)slider_value / 100.0;
+	double beta = (1.0 - alpha);
+	addWeighted(camera_frame, beta, edge_frame, alpha, 0.0, camera_frame);
+}
+
+int main() {	
 	VideoCapture video("input/jaguar.mp4");
 	VideoCapture camera(0);
 
@@ -16,6 +24,9 @@ int main() {
 	}
 
 	namedWindow("OpenCV Practice", 1);
+
+	slider_value = 0;
+	createTrackbar("Ratio", "OpenCV Practice", &slider_value, 100, on_trackbar);
 
 	while (1) {
 		video >> video_frame;
@@ -30,7 +41,8 @@ int main() {
 		gray_camera.copyTo(edge_frame, edges);
 		cvtColor(edge_frame, edge_frame, CV_GRAY2BGR);
 
-		addWeighted(camera_frame, 0.5, edge_frame, 0.5, 0, camera_frame);
+		on_trackbar(slider_value, 0);
+
 		ROI = video_frame(Rect(0, 0, camera_frame.cols, camera_frame.rows));
 
 		addWeighted(ROI, 0, camera_frame, 1, 0, ROI);
